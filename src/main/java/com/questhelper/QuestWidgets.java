@@ -1,9 +1,5 @@
-package com.questhelper.overlays;
-
 /*
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
- * Copyright (c) 2019, Trevor <https://github.com/Trevor159>
- * Copyright (c) 2020 Zoinkwiz <https://github.com/Zoinkwiz>
+ * Copyright (c) 2017, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,45 +22,55 @@ package com.questhelper.overlays;
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.questhelper;
 
-import com.questhelper.QuestHelperPlugin;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import javax.inject.Inject;
-import com.questhelper.questhelpers.QuestHelper;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
-
-public class QuestHelperWidgetOverlay extends Overlay
+public enum QuestWidgets
 {
-	private final QuestHelperPlugin plugin;
+	QUESTLIST_SCROLLBAR(399, 5),
+	QUESTLIST_CONTAINER(399, 6),
+	QUEST_CONTAINER(399, 7);
 
-	@Inject
-	public QuestHelperWidgetOverlay(QuestHelperPlugin plugin)
+	private final int groupId;
+	private final int childId;
+
+	QuestWidgets(int groupId, int childId)
 	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ALWAYS_ON_TOP);
-		setPriority(OverlayPriority.HIGH);
-		this.plugin = plugin;
+		this.groupId = groupId;
+		this.childId = childId;
 	}
 
-	@Override
-	public Dimension render(Graphics2D graphics)
+	public int getId()
 	{
-		if (!plugin.getConfig().showWidgetHints())
-		{
-			return null;
-		}
+		return groupId << 16 | childId;
+	}
 
-		QuestHelper quest = plugin.getSelectedQuest();
+	/**
+	 * Gets the group ID of the pair.
+	 *
+	 * @return the group ID
+	 */
+	public int getGroupId()
+	{
+		return groupId;
+	}
 
-		if (quest != null && quest.getCurrentStep() != null && quest.getCurrentStep().getActiveStep() != null)
-		{
-			quest.getCurrentStep().getActiveStep().makeWidgetOverlayHint(graphics, plugin);
-		}
+	/**
+	 * Gets the ID of the child in the group.
+	 *
+	 * @return the child ID
+	 */
+	public int getChildId()
+	{
+		return childId;
+	}
 
-		return null;
+	/**
+	 * Gets the packed widget ID.
+	 *
+	 * @return the packed ID
+	 */
+	public int getPackedId()
+	{
+		return groupId << 16 | childId;
 	}
 }
